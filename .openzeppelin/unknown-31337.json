@@ -1,0 +1,107 @@
+{
+  "manifestVersion": "3.2",
+  "admin": {
+    "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+    "txHash": "0x14ffb6a7714030ca16dd40abc0e160c1e1d945a6d50e723c2687425c1f37aa51"
+  },
+  "proxies": [
+    {
+      "address": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+      "txHash": "0x20b75557c5cf0b96972f2cc14c0a984c20e865d406712a73b2ed738eeab51d04",
+      "kind": "transparent"
+    }
+  ],
+  "impls": {
+    "51015eb69fec1d31d88e6c4995687c920a294729ab76c6c215b89f6bde0a2ab8": {
+      "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "txHash": "0xbea8cb97ae5c3322f065e6f21c811fa6a4d276d029e5e70c5deb307915c778a3",
+      "layout": {
+        "solcVersion": "0.8.17",
+        "storage": [
+          {
+            "label": "anr",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_contract(AlastriaNameRegistry)1066",
+            "contract": "AlastriaIdentityServiceProvider",
+            "src": "contracts/identity/AlastriaIdentityServiceProvider.sol:8"
+          },
+          {
+            "label": "serviceProviders",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "AlastriaIdentityServiceProvider",
+            "src": "contracts/identity/AlastriaIdentityServiceProvider.sol:10"
+          },
+          {
+            "label": "alastriaPublicKeyRegistry",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_contract(AlastriaPublicKeyRegistry)1544",
+            "contract": "AlastriaIdentityManager",
+            "src": "contracts/identity/AlastriaIdentityManager.sol:12"
+          },
+          {
+            "label": "identityManagerAdmin",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_address",
+            "contract": "AlastriaIdentityManager",
+            "src": "contracts/identity/AlastriaIdentityManager.sol:13"
+          },
+          {
+            "label": "DID",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_mapping(t_address,t_address)",
+            "contract": "AlastriaIdentityManager",
+            "src": "contracts/identity/AlastriaIdentityManager.sol:14"
+          },
+          {
+            "label": "pendingIDs",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "AlastriaIdentityManager",
+            "src": "contracts/identity/AlastriaIdentityManager.sol:15"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_contract(AlastriaNameRegistry)1066": {
+            "label": "contract AlastriaNameRegistry",
+            "numberOfBytes": "20"
+          },
+          "t_contract(AlastriaPublicKeyRegistry)1544": {
+            "label": "contract AlastriaPublicKeyRegistry",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_address)": {
+            "label": "mapping(address => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        }
+      }
+    }
+  }
+}

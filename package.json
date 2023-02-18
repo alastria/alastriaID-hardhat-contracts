@@ -1,0 +1,19 @@
+{
+  "name": "alastriaid-hardhat-contracts",
+  "version": "0.0.1",
+  "description": "Hardhat alastria contracts version",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/.bin/hardhat test",
+    "compile": "./node_modules/.bin/hardhat compile"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^2.0.1",
+    "@nomiclabs/hardhat-ethers": "^2.2.2",
+    "@openzeppelin/hardhat-upgrades": "^1.22.1",
+    "ethers": "^5.7.2",
+    "hardhat": "^2.12.6"
+  }
+}
