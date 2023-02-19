@@ -6,6 +6,7 @@ Smart Contracts are the key point to work with the Alastria Identity Ecosystem. 
 
 
 ## Smart Contracts
+
 All contracts which are placed here are the following ones:
 
 ### 1.- IdentityManager
@@ -33,6 +34,7 @@ The previous contracts use some libraries which are:
 |Contract |	What it does |
 | :------------- |:-------------|
 |Eidas.sol|	It manages Eidas level of assurance for credentials |
+
 ### 4.- Access
 
 The previous contracts use this access management:
@@ -54,13 +56,14 @@ These instances of Open Zeppelin contracts have been tailored for the Alastria v
 |Proxy.sol|	Is the base contract for upgradeability, generating a fallback pattern |
 |UpgradeabilityProxy.sol|	Expands basic proxy to create a proxy that accepts upgradeability (memory management) |
 
-
 ## Deploy Contracts
+
 In this section it will be possible to see how to work with Smart Contracts in different environments which are: Remix, Ganache + Truffle and in a test environment. It will be explained for cases where you want to use your own scripts and in case you want to use the scripts you can find in the `package.json` file
 
 ### Own Scripts
 
 #### Remix
+
 To work with remix, you can install it globally, with the following command:
 `` npm i -g @remix-project/remixd `` doing this you have remixd installed. 
 Also, remix is included in the repo, you can go with the install of the project and use: 
@@ -82,12 +85,14 @@ Wed Jun 02 2021 16:29:18 GMT+0200 (GMT+02:00) remixd is listening on 127.0.0.1:6
 [WARN] You may now only use IDE at http://remix.ethereum.org to connect to that instance
 setup notifications for /home/ubuntu/Escritorio/temp-alastriaID-truffle-contracts/contracts/
 ````
+
 As well of you click on the first icon where the smart contracts are, they will appear on this tab.
 ![Remix Contracts](./images/CaptureContracts.jpg)
 
 Then you can work with the Smart Contracts, deploying firstly AlastriaIdentityManager
 
 ### Repository Scripts
+
 This repository has in `package.json` some scripts which are very useful in case you don't want to loose time installing things, but it is important to have installed docker in your system.
 
 To install all content from `package.json`, inside the repo, just run ``npm i`` , once it is executed you can run the following scripts through npm run command:
@@ -112,7 +117,9 @@ To install all content from `package.json`, inside the repo, just run ``npm i`` 
 - **dockerTestnetConsole**: Go inside docker to make an attachment and work with geth console.  
 
 ### Configurations
-In order to run the project in different types of Network, there are some configurations to take into account. There are the following ones:  
+
+In order to run the project in different types of Network, there are some configurations to take into account. There are the following ones:
+
 - **Node in T Network has the following IP address**: **<http://63.33.206.111/rpc>**  
 - **Node in B Network has the following IP address**: **<http://63.33.206.111:8545>**
 
@@ -122,7 +129,8 @@ Once it is know the previous aspects, in the truffle-config file there are some 
 - **red-t**: Which works with the t-network node and the admin and first-id acounts
 - **red-b**: Which works with the b-network node and the admin and first-id acounts
 
-Both accounts are the following ones:  
+Both accounts are the following ones:
+
 - **firstIdentityWallet**: `0x643266eb3105f4bf8b4f4fec50886e453f0da9ad`  
 - **adminAccount**: `0x6e3976aeaa3A59E4AF51783CC46EE0fFabC5DC11`  
 _Their respective private keys are stored in the accounts folder_
