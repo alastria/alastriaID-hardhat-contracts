@@ -1,97 +1,134 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import "../libs/SafeMath.sol";
+import "../openzeppelin/Initializable.sol";
 
-contract AlastriaPublicKeyRegistry {
-  using SafeMath for uint256;
-  enum STATUS {Deleted, Alive}
-  enum FORMAT {JWK, PEM, DER, RAW}
-  
-  // Public key struct for data
-  // the public MUST be in an accepted standard like JWK, PEM or DER
-  struct PublicKey {
-    STATUS status;
-    string publicKey;
-    FORMAT format;
-    uint startDate;
-    uint endDate;
-  }
-  
-  // Mapping identity to Key ID keccak256(publicKey) to publickey data
-  mapping(address => mapping(bytes32 => PublicKey)) public publicKeyRegistry;
-  // Mapping subject => keyIndex => keyHash
-  mapping(address => mapping(uint256 => bytes32)) public publicKeyList;
-  // Mapping subjst => currentIndex
-  mapping(address => uint256) public currentIndexes;
+contract AlastriaPublicKeyRegistry is Initializable{
 
-  // Events, just for revocation and deletion
-  event PublicKeyDeleted (string publicKey, bytes32 id);
+    /*Major updates in V2.2.
 
-// Modifiers
-  modifier validAddress(address addr) {//protects against some weird attacks
-      require(addr != address(0));
-      _;
-  }
+    - addPublicKey is a new function for registry a new public key through its hash,  in addition 
+      the automatic revocation has been eliminated, now the user must do it.
+    - revokePublicKey and deletePublicKey function can be called from the public key and through the hash of the public key.
+    - PublicKeyRevoked and PublicKeyDeleted events can be called from the public key and through the hash of the public key.
+    */
 
-  /**
-   * @dev Sets new key and revokes previous
-   */
-  function addPublicKey(string memory publicKey, FORMAT format) public
-  {
-      uint256 currentIndex = currentIndexes[msg.sender];
-      revokePublicKey(publicKeyList[msg.sender][currentIndex]);
-      publicKeyRegistry[msg.sender][getKeyHash(publicKey)] = PublicKey(
-          STATUS.Alive,
-          publicKey,
-          format,
-          block.timestamp,
-          0
-      );
-      currentIndexes[msg.sender] = currentIndex.add(1);
-      publicKeyList[msg.sender][currentIndex.add(1)] = getKeyHash(publicKey);
-  }
+    // This contracts registers and makes publicly avalaible the AlastriaID Public Keys hash and status, current and past.
 
-  /**
-  * @dev Revoke a public key published, if none is added, the identity will be invalidated
-  */
-  function revokePublicKey(bytes32 publicKeyId) public
-  {
-      PublicKey storage publicKey = publicKeyRegistry[msg.sender][publicKeyId];
-      // only existent no backtransition
-      if (publicKey.endDate == 0 && publicKey.status != STATUS.Deleted) {
-          publicKey.endDate = block.timestamp;
-          publicKey.status = STATUS.Deleted;
-          emit PublicKeyDeleted(publicKey.publicKey, publicKeyId);
-      }
-  }
+    //To Do: Should we add RevokedBySubject Status?
 
-  /**
-  * @dev Gets the last public added to an identity
-  * @param subject of the key
-  */
-  function getCurrentPublicKey(address subject) view public validAddress(subject) returns (string memory, FORMAT)
-  {
-    PublicKey storage publicKey = publicKeyRegistry[subject][publicKeyList[subject][currentIndexes[subject]]];
-    return (publicKey.publicKey, publicKey.format);
-  }
+    //Variables
+    int public version;
+    address public previousPublishedVersion;
 
-  /**
-  * @dev Get the status from a given identity and a public key
-  * @param subject key owner
-  * @param publicKey data payload
-  */
-  function getPublicKeyStatus(address subject, string memory publicKey) view public validAddress(subject)
-  returns (STATUS status, uint startDate, uint endDate)
-  {
-      PublicKey storage value = publicKeyRegistry[subject][getKeyHash(publicKey)];
-      return (value.status, value.startDate, value.endDate);
-  }
+    // Initially Valid: could only be changed to DeletedBySubject for the time being.
+    enum Status {Valid, DeletedBySubject}
+    struct PublicKey {
+        bool exists;
+        Status status; // Deleted keys shouldnt be used, not even to check previous signatures.
+        uint startDate;
+        uint endDate;
+    }
 
-  /**
-  * @dev Returns de hash of an input key as string to generate a bytes32 index
-  */
-  function getKeyHash(string memory inputKey) internal pure returns(bytes32){
-      return keccak256(abi.encodePacked(inputKey));
-  }
+    // Mapping (subject, publickey)
+    mapping(address => mapping(bytes32 => PublicKey)) private publicKeyRegistry;
+    // mapping subject => publickey
+    mapping(address => string[]) public publicKeyList;
+
+    //Events, just for revocation and deletion
+    event PublicKeyDeleted (string publicKey);
+    event PublicKeyRevoked (string publicKey);
+    event PublicKeyRevoked (bytes32 publicKeyHash);
+    event PublicKeyDeleted (bytes32 publicKeyHash);
+
+    //Modifiers
+    modifier validAddress(address addr) {//protects against some weird attacks
+        require(addr != address(0));
+        _;
+    }
+
+    function initialize(address _previousPublishedVersion) initializer public{
+        version = 4;
+        previousPublishedVersion = _previousPublishedVersion;
+    }
+
+    // Sets new key and revokes previous
+    function addKey(string memory publicKey) public {
+        require(!publicKeyRegistry[msg.sender][getKeyHash(publicKey)].exists);
+        uint changeDate = block.timestamp;
+        revokePublicKey(getCurrentPublicKey(msg.sender));
+        publicKeyRegistry[msg.sender][getKeyHash(publicKey)] = PublicKey(
+            true,
+            Status.Valid,
+            changeDate,
+            0
+        );
+        publicKeyList[msg.sender].push(publicKey);
+    }
+
+    function addPublicKey(bytes32 publicKeyHash) public {
+        require(!publicKeyRegistry[msg.sender][publicKeyHash].exists);
+        uint changeDate = block.timestamp;
+        publicKeyRegistry[msg.sender][publicKeyHash] = PublicKey(
+            true, 
+            Status.Valid,
+            changeDate,
+            0
+        );
+    }
+
+    function revokePublicKey(string memory publicKey) public {
+        PublicKey storage value = publicKeyRegistry[msg.sender][getKeyHash(publicKey)];
+        // only existent no backtransition
+        if (value.exists && value.status != Status.DeletedBySubject) {
+            value.endDate = block.timestamp;
+            emit PublicKeyRevoked(publicKey);
+        }
+    }
+
+    function revokePublicKey(bytes32 publicKeyHash) public {
+        PublicKey storage value = publicKeyRegistry[msg.sender][publicKeyHash];
+        if (value.exists && value.status != Status.DeletedBySubject) {
+            value.endDate = block.timestamp;
+            emit PublicKeyRevoked(publicKeyHash);
+        }
+    }
+
+    function deletePublicKey(string memory publicKey) public {
+        PublicKey storage value = publicKeyRegistry[msg.sender][getKeyHash(publicKey)];
+        // only existent
+        if (value.exists) {
+            value.status = Status.DeletedBySubject;
+            value.endDate = block.timestamp;
+            emit PublicKeyDeleted(publicKey);
+        }
+    }
+
+    function deletePublicKey(bytes32 publicKeyHash) public {
+        PublicKey storage value = publicKeyRegistry[msg.sender][publicKeyHash];
+        if (value.exists) {
+            value.status = Status.DeletedBySubject;
+            value.endDate = block.timestamp;
+            emit PublicKeyDeleted(publicKeyHash);
+        }
+    }
+
+    function getCurrentPublicKey(address subject) view public validAddress(subject) returns (string memory) {
+        if (publicKeyList[subject].length > 0) {
+            return publicKeyList[subject][publicKeyList[subject].length - 1];
+        } else {
+            return "";
+        }
+    }
+
+    function getPublicKeyStatus(address subject, bytes32 publicKey) view public validAddress(subject)
+        returns (bool exists, Status status, uint startDate, uint endDate){
+        PublicKey storage value = publicKeyRegistry[subject][publicKey];
+        return (value.exists, value.status, value.startDate, value.endDate);
+    }
+    
+    function getKeyHash(string memory inputKey) internal pure returns(bytes32){
+        return keccak256(abi.encodePacked(inputKey));
+    }
+
 }
