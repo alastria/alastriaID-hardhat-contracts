@@ -5,22 +5,78 @@
 // will compile your contracts, add the Hardhat Runtime Environment's members to the
 // global scope, and execute the script.
 const hre = require("hardhat");
+const fs = require('fs');
+
+const addresses = {};
+
+async function saveAddresesInfo(address, contractName, network) {
+  if (network === 'development') {
+    return;
+  }
+  addresses[contractName] = address;
+  console.log(`${contractName} address info saved!`);
+}
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-  const unlockTime = currentTimestampInSeconds + ONE_YEAR_IN_SECS;
 
-  const lockedAmount = hre.ethers.utils.parseEther("1");
+  const Eidas = await hre.ethers.getContractFactory("Eidas");
+  // const AlastriaIdentityServiceProvider = await hre.ethers.getContractFactory("AlastriaIdentityServiceProvider");
+  // const AlastriaIdentityIssuer = await hre.ethers.getContractFactory("AlastriaIdentityIssuer");
+  const Proxy = await hre.ethers.getContractFactory("AdminUpgradeabilityProxy");
+  const AlastriaIdentityManager = await hre.ethers.getContractFactory("AlastriaIdentityManager");
+  const AlastriaCredentialRegistry = await hre.ethers.getContractFactory("AlastriaCredentialRegistry");
+  const AlastriaPresentationRegistry = await hre.ethers.getContractFactory("AlastriaPresentationRegistry");
+  const AlastriaPublicKeyRegistry = await hre.ethers.getContractFactory("AlastriaPublicKeyRegistry");
 
-  const Lock = await hre.ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
 
-  await lock.deployed();
+  const eidas = await Eidas.deploy();
+  await eidas.deployed();
 
-  console.log(
-    `Lock with 1 ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`
+  const alastriaIdentityManager = await AlastriaIdentityManager.deploy();
+  await alastriaIdentityManager.deployed();
+  const alastriaIdentityManagerProxy = await Proxy.deploy();
+  await alastriaIdentityManagerProxy.deployed();
+  console.log('identityManager deployed: ', alastriaIdentityManagerProxy.address);
+  await saveAddresesInfo(
+    alastriaIdentityManagerProxy.address,
+    config.manager,
+    network
   );
+
+  const alastriaCredentialRegistry = await AlastriaCredentialRegistry.deploy();
+  await alastriaCredentialRegistry.deployed();
+  const alastriaCredentialRegistryProxy = await Proxy.deploy();
+  await alastriaCredentialRegistryProxy.deployed();
+  console.log('identityManager deployed: ', alastriaIdentityManagerProxy.address);
+  await saveAddresesInfo(
+    alastriaCredentialRegistryProxy.address,
+    config.manager,
+    network
+  );
+
+  const alastriaPresentationRegistry = await AlastriaPresentationRegistry.deploy();
+  await alastriaPresentationRegistry.deployed();
+  const alastriaPresentationRegistryProxy = await Proxy.deploy();
+  await alastriaPresentationRegistryProxy.deployed();
+  console.log('identityManager deployed: ', alastriaIdentityManagerProxy.address);
+  await saveAddresesInfo(
+    alastriaPresentationRegistryProxy.address,
+    config.manager,
+    network
+  );
+
+  const alastriaPublicKeyRegistry = await AlastriaPublicKeyRegistry.deploy();
+  await alastriaPublicKeyRegistry.deployed();
+  const alastriaPublicKeyRegistryProxy = await Proxy.deploy();
+  await alastriaPublicKeyRegistryProxy.deployed();
+  console.log('identityManager deployed: ', alastriaIdentityManagerProxy.address);
+  await saveAddresesInfo(
+    alastriaPublicKeyRegistryProxy.address,
+    config.manager,
+    network
+  );
+
+  await fs.writeFileSync('./addresses.json', JSON.stringify(addresses));
 }
 
 // We recommend this pattern to be able to use async/await everywhere
