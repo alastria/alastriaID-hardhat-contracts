@@ -5,7 +5,19 @@
   "main": "index.js",
   "scripts": {
     "test": "./node_modules/.bin/hardhat test",
-    "compile": "./node_modules/.bin/hardhat compile"
+    "compile": "./node_modules/.bin/hardhat compile",
+    "dockerTestnetRun": "docker run --name geth-node -d -p 8545:8545 ethereum/client-go --dev --http",
+    "lint": "./node_modules/.bin/solium -d contracts/",
+    "remixd": "./node_modules/.bin/remixd -s $(pwd)/contracts --remix-ide https://remix.ethereum.org",
+    "migrateToRedT": "npx hardhat run scripts/deploy.js --network red-t",
+    "updateRedT": "npx hardhat run scripts/update.js --network red-t",
+    "migrateToRedB": "npx hardhat run scripts/deploy.js --network red-b",
+    "updateRedB": "npx hardhat run scripts/update.js --network red-b",
+    "migrateLocal": "npx hardhat run scripts/deploy.js --network local",
+    "updateLocal": "npx hardhat run scripts/update.js --network local",
+    "dockerTestnetStop": "docker rm geth-node",
+    "dockerTestnetLogs": "docker logs geth-node --tail 40 -f",
+    "dockerTestnetConsole": "docker exec -it geth-node geth attach /tmp/geth.ipc"
   },
   "author": "",
   "license": "ISC",
@@ -15,5 +27,8 @@
     "@openzeppelin/hardhat-upgrades": "^1.22.1",
     "ethers": "^5.7.2",
     "hardhat": "^2.12.6"
+  },
+  "dependencies": {
+    "keythereum": "^2.0.0"
   }
 }
