@@ -11,6 +11,7 @@ import "./AlastriaIdentityIssuer.sol";
 import "./AlastriaProxy.sol";
 
 contract AlastriaIdentityManager is AlastriaIdentityServiceProvider, AlastriaIdentityIssuer, Ownable, Initializable {
+    using Eidas for Eidas.EidasLevel;
 
     //Variables
     uint256 public version;

@@ -15,7 +15,7 @@ const bNetworkNode = "http://63.33.206.111:8545";
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
-  defaultNetwork: "goerli",
+  defaultNetwork: "hardhat",
   networks: {
     hardhat: {
     },
