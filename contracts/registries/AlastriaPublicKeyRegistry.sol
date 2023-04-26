@@ -53,6 +53,7 @@ contract AlastriaPublicKeyRegistry is Initializable{
     }
 
     // Sets new key and revokes previous
+    // THIS METHOD WILL BE DEPREATED
     function addKey(string memory publicKey) public {
         require(!publicKeyRegistry[msg.sender][getKeyHash(publicKey)].exists);
         uint changeDate = block.timestamp;
@@ -77,6 +78,7 @@ contract AlastriaPublicKeyRegistry is Initializable{
         );
     }
 
+    // THIS METHOD WILL BE DEPREATED
     function revokePublicKey(string memory publicKey) public {
         PublicKey storage value = publicKeyRegistry[msg.sender][getKeyHash(publicKey)];
         // only existent no backtransition
@@ -94,6 +96,7 @@ contract AlastriaPublicKeyRegistry is Initializable{
         }
     }
 
+    // THIS METHOD WILL BE DEPREATED
     function deletePublicKey(string memory publicKey) public {
         PublicKey storage value = publicKeyRegistry[msg.sender][getKeyHash(publicKey)];
         // only existent
