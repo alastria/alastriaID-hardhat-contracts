@@ -12,6 +12,19 @@ const admin_keystore_file = './accounts/admin-6e3976aeaa3a59e4af51783cc46ee0ffab
 
 const addresses = {};
 
+const config = {
+  firstIdentityWallet: "0x643266eb3105f4bf8b4f4fec50886e453f0da9ad",
+  adminAccount: "0x6e3976aeaa3A59E4AF51783CC46EE0fFabC5DC11",
+  manager: "AlastriaIdentityManager",
+  nameService: "AlastriaNameService",
+  presentation: "AlastriaPresentationRegistry",
+  credential: "AlastriaCredentialRegistry",
+  publicKey: "AlastriaPublicKeyRegistry",
+  serviceProvider: "AlastriaServiceProvider",
+  identityIssuer: "AlastriaIdentityIssuer",
+  eidas: "Eidas"
+};
+
 async function saveAddresesInfo(address, contractName, network) {
   if (network === 'development') {
     return;
@@ -21,18 +34,7 @@ async function saveAddresesInfo(address, contractName, network) {
 }
 
 async function initialize(credentialRegistry, presentationRegistry, publicKeyRegistry, identityManager) {
-  const config = {
-    firstIdentityWallet: "0x643266eb3105f4bf8b4f4fec50886e453f0da9ad",
-    adminAccount: "0x6e3976aeaa3A59E4AF51783CC46EE0fFabC5DC11",
-    manager: "AlastriaIdentityManager",
-    nameService: "AlastriaNameService",
-    presentation: "AlastriaPresentationRegistry",
-    credential: "AlastriaCredentialRegistry",
-    publicKey: "AlastriaPublicKeyRegistry",
-    serviceProvider: "AlastriaServiceProvider",
-    identityIssuer: "AlastriaIdentityIssuer",
-    eidas: "Eidas"
-  };
+
   const AlastriaIdentityManager = await hre.ethers.getContractFactory("AlastriaIdentityManager");
   const AlastriaCredentialRegistry = await hre.ethers.getContractFactory("AlastriaCredentialRegistry");
   const AlastriaPresentationRegistry = await hre.ethers.getContractFactory("AlastriaPresentationRegistry");
@@ -113,7 +115,7 @@ async function main() {
     console.log('identityManager deployed: ', alastriaIdentityManagerProxy.address);
     await saveAddresesInfo(
       alastriaIdentityManagerProxy.address,
-      'Identity manager',
+      config.manager,
       network
       );
     console.log('DEPLOYING CONTRACTS: CREDENTIAL REGISTRY');
@@ -124,7 +126,7 @@ async function main() {
     console.log('credentialRegistry deployed: ', alastriaCredentialRegistryProxy.address);
     await saveAddresesInfo(
       alastriaCredentialRegistryProxy.address,
-      'credential registry',
+      config.credential,
       network
       );
     console.log('DEPLOYING CONTRACTS: PRESENTATION REGISTRY');
@@ -135,7 +137,7 @@ async function main() {
     console.log('presentationRegistry deployed: ', alastriaPresentationRegistryProxy.address);
     await saveAddresesInfo(
       alastriaPresentationRegistryProxy.address,
-      'presentation registry',
+      config.presentation,
       network
       );
     console.log('DEPLOYING CONTRACTS: PK REGISTRY');
@@ -146,7 +148,7 @@ async function main() {
     console.log('pkRegistry deployed: ', alastriaPublicKeyRegistryProxy.address);
     await saveAddresesInfo(
       alastriaPublicKeyRegistryProxy.address,
-      'public key registry',
+      config.publicKey,
       network
       );
       
