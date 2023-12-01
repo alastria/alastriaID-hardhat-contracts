@@ -10,8 +10,8 @@ const adminKey = keythereum.recover(password, JSON.parse(fs.readFileSync(adminPa
 const firstIdKey = keythereum.recover(password, JSON.parse(fs.readFileSync(firstId, 'utf8'))).toString('hex');
 
 const localNode = "http://127.0.0.1:8545";
-const tNetworkNode = "http://63.33.206.111/rpc";
-const bNetworkNode = "http://63.33.206.111:8545";
+const tNetworkNode = "http://52.19.141.129:22000";
+const bNetworkNode = "http://52.19.141.129:23000";
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -23,14 +23,14 @@ module.exports = {
       gasPrice: 0x0,
       accounts: [firstIdKey, adminKey],
       // One of: "byzantium", "constantinople", "petersburg", "istanbul", "muirGlacier", "berlin", "london", "arrowGlacier", "grayGlacier" and "merge". Default value: "merge"
-      hardfork: "merge",
+      hardfork: "berlin",
       url: localNode
     },
     'red-b': {
       gasPrice: 0x0,
       accounts: [firstIdKey, adminKey],
       // One of: "byzantium", "constantinople", "petersburg", "istanbul", "muirGlacier", "berlin", "london", "arrowGlacier", "grayGlacier" and "merge". Default value: "merge"
-      hardfork: "merge",
+      hardfork: "berlin",
       url: bNetworkNode
     },
     'red-t': {
@@ -44,9 +44,10 @@ module.exports = {
   solidity: {
     version: "0.8.17",
     settings: {
+      evmVersion: 'berlin',
       optimizer: {
         enabled: true,
-        runs: 1000,
+        runs: 200,
       },
     },
   },
