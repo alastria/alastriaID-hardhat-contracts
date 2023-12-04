@@ -151,6 +151,18 @@ async function main() {
       config.publicKey,
       network
       );
+
+      console.log('DEPLOYING CONTRACTS: EIDAS');
+      const eidasSC = await Eidas.deploy();
+      await eidasSC.deployed();
+      const eidasProxy = await Proxy.deploy(eidasSC.address, ADMIN_ADDRESS, []);
+      await eidasProxy.deployed();
+      console.log('eidas deployed: ', eidasProxy.address);
+      await saveAddresesInfo(
+        eidasProxy.address,
+        config.eidas,
+        network
+        );
       
       await fs.writeFileSync('./addresses.json', JSON.stringify(addresses));
       await initialize(alastriaCredentialRegistryProxy, alastriaPresentationRegistryProxy, alastriaPublicKeyRegistryProxy, alastriaIdentityManagerProxy);
