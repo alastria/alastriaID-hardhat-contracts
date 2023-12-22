@@ -40,7 +40,7 @@ async function initialize(credentialRegistry, presentationRegistry, publicKeyReg
   const AlastriaPresentationRegistry = await hre.ethers.getContractFactory("AlastriaPresentationRegistry");
   const AlastriaPublicKeyRegistry = await hre.ethers.getContractFactory("AlastriaPublicKeyRegistry");
   try {
-    console.log('Voy a petar');
+    console.log('Problems in red T');
     console.log("INITIALIZING CR")
     const proxifiedCredentialRegistry = await AlastriaCredentialRegistry.attach(credentialRegistry.address);
     let tx = await proxifiedCredentialRegistry.initialize(
@@ -102,6 +102,7 @@ async function main() {
     const AlastriaCredentialRegistry = await hre.ethers.getContractFactory("AlastriaCredentialRegistry");
     const AlastriaPresentationRegistry = await hre.ethers.getContractFactory("AlastriaPresentationRegistry");
     const AlastriaPublicKeyRegistry = await hre.ethers.getContractFactory("AlastriaPublicKeyRegistry");
+    const AlastriaNameService = await hre.ethers.getContractFactory("AlastriaNameService");
     
     console.log('DEPLOYING CONTRACTS');
     const eidas = await Eidas.deploy();
@@ -152,20 +153,32 @@ async function main() {
       network
       );
 
-      console.log('DEPLOYING CONTRACTS: EIDAS');
-      const eidasSC = await Eidas.deploy();
-      await eidasSC.deployed();
-      const eidasProxy = await Proxy.deploy(eidasSC.address, ADMIN_ADDRESS, []);
-      await eidasProxy.deployed();
-      console.log('eidas deployed: ', eidasProxy.address);
-      await saveAddresesInfo(
-        eidasProxy.address,
-        config.eidas,
-        network
-        );
+    console.log('DEPLOYING CONTRACTS: EIDAS');
+    const eidasSC = await Eidas.deploy();
+    await eidasSC.deployed();
+    const eidasProxy = await Proxy.deploy(eidasSC.address, ADMIN_ADDRESS, []);
+    await eidasProxy.deployed();
+    console.log('eidas deployed: ', eidasProxy.address);
+    await saveAddresesInfo(
+      eidasProxy.address,
+      config.eidas,
+      network
+      );
+
+    console.log('DEPLOYING CONTRACTS: NAME SERVICE');
+    const alastriaNameServicesSC = await AlastriaNameService.deploy(ADMIN_ADDRESS);
+    await alastriaNameServicesSC.deployed();
+    const alastriaNameServiceProxy = await Proxy.deploy(alastriaNameServicesSC.address, ADMIN_ADDRESS, []);
+    await alastriaNameServiceProxy.deployed();
+    console.log('nameServiceDeployed deployed: ', alastriaNameServiceProxy.address);
+    await saveAddresesInfo(
+      alastriaNameServiceProxy.address,
+      config.nameService,
+      network
+      );
       
-      await fs.writeFileSync('./addresses.json', JSON.stringify(addresses));
-      await initialize(alastriaCredentialRegistryProxy, alastriaPresentationRegistryProxy, alastriaPublicKeyRegistryProxy, alastriaIdentityManagerProxy);
+    await fs.writeFileSync('./addresses.json', JSON.stringify(addresses));
+    await initialize(alastriaCredentialRegistryProxy, alastriaPresentationRegistryProxy, alastriaPublicKeyRegistryProxy, alastriaIdentityManagerProxy);
     }
           
 // We recommend this pattern to be able to use async/await everywhere
