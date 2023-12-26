@@ -1,0 +1,8 @@
+{
+    "AlastriaIdentityManager": "0x25C13B43532214ef5b8676f0A4A1c8Cbe5cDDa8d",
+    "AlastriaCredentialRegistry": "0x1BC8bc2eA3e9E6C1EaE474F650Cf9Aa4eB04e805",
+    "AlastriaPresentationRegistry": "0xf42905d82C12f94553b468343dD3Db3840deE940",
+    "AlastriaPublicKeyRegistry": "0x9dE8755f7596d576Eabb58B3Dd93408cE4a34353",
+    "Eidas": "0x52A0A52Eb46aF030009FED2C81D728063e682D16",
+    "AlastriaNameService": "0x9C5D37B951E1E280ad8D3359b005F3EBEA64Cfab"
+}

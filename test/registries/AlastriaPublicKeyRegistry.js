@@ -64,7 +64,7 @@ describe("AlastriaPublicKeyRegistry", function () {
       const currentPublicKey = registry.getCurrentPublicKey(otherAccount.address)
       const keyHash = ethers.utils.solidityKeccak256([ "string" ], [ publicKey1 ])
       const publicKeyStatus = await registry.getPublicKeyStatus(otherAccount.address, keyHash)
-      assert.strictEqual(publicKeyStatus[0], VALID, 'should exist')
+      assert.strictEqual(publicKeyStatus[0], true, 'should exist')
       // assert.strictEqual(publicKeyStatus[1].toNumber(), VALID, 'should be valid')
       // assert.strictEqual(publicKeyStatus[2].toNumber(), blockInfo.timestamp, 'should be now')
       // assert.strictEqual(publicKeyStatus[3].toNumber(), 0, 'should be 0 notime')
