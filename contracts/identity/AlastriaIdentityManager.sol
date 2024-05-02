@@ -85,13 +85,13 @@ contract AlastriaIdentityManager is AlastriaIdentityServiceProvider, AlastriaIde
 
     /**
     * @dev Creates a new AlastriaProxy contract for an owner and recovery and allows an initial forward call which would be to set the registry in our case
-    * @param publicKey to be encoded in PublicKeyRegistry call from IdentityManager
+    * @param publicKeyHash to be encoded in PublicKeyRegistry call from IdentityManager
     */
-    function createAlastriaIdentity(string memory publicKey, uint256 format) public validAddress(msg.sender) isPendingAndOnTime(msg.sender) {
+    function createAlastriaIdentity(bytes32 publicKeyHash) public validAddress(msg.sender) isPendingAndOnTime(msg.sender) {
         AlastriaProxy identity = new AlastriaProxy();
         identityKeys[msg.sender] = address(identity);
         pendingIDs[msg.sender] = 0;
-        bytes memory addPublicKeyCallData = abi.encodeWithSignature("addPublicKey(string, uin256)", publicKey, format);
+        bytes memory addPublicKeyCallData = abi.encodeWithSignature("addPublicKey(bytes32)", publicKeyHash);
         identity.forward(address(alastriaPublicKeyRegistry), 0, addPublicKeyCallData);//must be alastria registry call
     }
 
