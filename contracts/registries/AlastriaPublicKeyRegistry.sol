@@ -127,7 +127,7 @@ contract AlastriaPublicKeyRegistry is Initializable{
 
     function getPublicKeyStatus(address subject, bytes32 publicKeyHash) view public validAddress(subject)
         returns (bool exists, Status status, uint startDate, uint endDate){
-        require(publicKeyRegistry[msg.sender][publicKeyHash].exists, "Public Key not exists");
+        require(publicKeyRegistry[subject][publicKeyHash].exists, "Public Key not exists");
         PublicKey storage value = publicKeyRegistry[subject][publicKeyHash];
         return (value.exists, value.status, value.startDate, value.endDate);
     }
