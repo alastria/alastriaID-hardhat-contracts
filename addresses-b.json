@@ -1,8 +1,8 @@
 {
-  "AlastriaIdentityManager": "0xea853f0ba27214f23eE1a811858aa6E8279F4BB6",
-  "AlastriaCredentialRegistry": "0x2BeeC92343048964B1d703973abB9FB26EFd61ad",
-  "AlastriaPresentationRegistry": "0xe6121dFaC26Db2A1A6865d2b908E6823EDc5477D",
-  "AlastriaPublicKeyRegistry": "0xc6D59069d6a8fc80888e1B60786BEcBB012f9501",
-  "Eidas": "0xAA03150CA5DF951D1ad790E3725bC88EF809bD25",
-  "AlastriaNameService": "0x218226f28A03fCEA89835dA637DBBfdE659F27Fa"
+  "AlastriaIdentityManager": "0xDD901f75620bB2cbA1e5870Ec1e5d239A7ED2A39",
+  "AlastriaCredentialRegistry": "0x5672F12DF0e54029f35a6BE6F4035A078Ac252d6",
+  "AlastriaPresentationRegistry": "0x4DF86c724c02ee21b332Ff2A70fE77C1568a7220",
+  "AlastriaPublicKeyRegistry": "0x626FF03a4382913514E0136c145dd4236DFf8744",
+  "Eidas": "0x43EeE07766900B9960185094120C70D85DC5272F",
+  "AlastriaNameService": "0xdE4B5F3Bd8b506729aA9AB3C1f1bf1Dc5bd5A707"
 }

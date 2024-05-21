@@ -116,6 +116,7 @@ contract AlastriaPublicKeyRegistry is Initializable{
         }
     }
 
+    // THIS METHOD WILL BE DEPREATED
     function getCurrentPublicKey(address subject) view public validAddress(subject) returns (string memory) {
         if (publicKeyList[subject].length > 0) {
             return publicKeyList[subject][publicKeyList[subject].length - 1];
@@ -124,12 +125,14 @@ contract AlastriaPublicKeyRegistry is Initializable{
         }
     }
 
-    function getPublicKeyStatus(address subject, bytes32 publicKey) view public validAddress(subject)
+    function getPublicKeyStatus(address subject, bytes32 publicKeyHash) view public validAddress(subject)
         returns (bool exists, Status status, uint startDate, uint endDate){
-        PublicKey storage value = publicKeyRegistry[subject][publicKey];
+        require(publicKeyRegistry[msg.sender][publicKeyHash].exists, "Public Key not exists");
+        PublicKey storage value = publicKeyRegistry[subject][publicKeyHash];
         return (value.exists, value.status, value.startDate, value.endDate);
     }
     
+    // THIS METHOD WILL BE DEPREATED
     function getKeyHash(string memory inputKey) internal pure returns(bytes32){
         return keccak256(abi.encodePacked(inputKey));
     }
