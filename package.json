@@ -5,15 +5,43 @@
   "main": "index.js",
   "scripts": {
     "test": "./node_modules/.bin/hardhat test",
-    "compile": "./node_modules/.bin/hardhat compile"
+    "compile": "./node_modules/.bin/hardhat compile",
+    "dockerTestnetRun": "docker run --name geth-node -d -p 8545:8545 ethereum/client-go --dev --http",
+    "lint": "./node_modules/.bin/solium -d contracts/",
+    "remixd": "./node_modules/.bin/remixd -s $(pwd)/contracts --remix-ide https://remix.ethereum.org",
+    "migrateToRedT": "npx hardhat run scripts/deploy.js --network red-t",
+    "updateRedT": "npx hardhat run scripts/update.js --network red-t",
+    "migrateToRedB": "npx hardhat run scripts/deploy.js --network red-b",
+    "updateRedB": "npx hardhat run scripts/update.js --network red-b",
+    "migrateLocal": "npx hardhat run scripts/deploy.js --network local",
+    "updateLocal": "npx hardhat run scripts/update.js --network local",
+    "dockerTestnetStop": "docker rm geth-node",
+    "dockerTestnetLogs": "docker logs geth-node --tail 40 -f",
+    "dockerTestnetConsole": "docker exec -it geth-node geth attach /tmp/geth.ipc"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^2.0.1",
-    "@nomiclabs/hardhat-ethers": "^2.2.2",
-    "@openzeppelin/hardhat-upgrades": "^1.22.1",
+    "@nomicfoundation/hardhat-toolbox": "^2.0.2",
+    "@nomiclabs/hardhat-ethers": "^2.2.3",
+    "@openzeppelin/hardhat-upgrades": "^1.28.0",
     "ethers": "^5.7.2",
-    "hardhat": "^2.12.6"
+    "hardhat": "^2.19.1",
+    "@nomicfoundation/hardhat-chai-matchers": "^1.0.6",
+    "@nomicfoundation/hardhat-network-helpers": "^1.0.9",
+    "@nomiclabs/hardhat-etherscan": "^3.1.7",
+    "@typechain/ethers-v5": "^10.2.1",
+    "@typechain/hardhat": "^6.1.6",
+    "@types/chai": "^4.3.11",
+    "@types/mocha": "^10.0.6",
+    "chai": "^4.3.10",
+    "hardhat-gas-reporter": "^1.0.9",
+    "solidity-coverage": "^0.8.5",
+    "ts-node": "^10.9.1",
+    "typechain": "^8.3.2",
+    "typescript": "^5.3.2"
+  },
+  "dependencies": {
+    "keythereum": "^2.0.0"
   }
 }

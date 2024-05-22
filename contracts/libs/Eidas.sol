@@ -21,7 +21,7 @@ library Eidas {
         return (_eidasLevel == EidasLevel.High);
     }*/
 
-    function atLeastLow(EidasLevel _eidasLevel) public pure returns (bool) {
+    function atLeastLow(EidasLevel _eidasLevel) internal pure returns (bool) {
         return atLeast(_eidasLevel, EidasLevel.Low);
     }
 
@@ -33,7 +33,7 @@ library Eidas {
         return atLeast(_eidasLevel, EidasLevel.High);
     }*/
 
-    function atLeast(EidasLevel _eidasLevel, EidasLevel _level) public pure returns (bool) {
+    function atLeast(EidasLevel _eidasLevel, EidasLevel _level) internal pure returns (bool) {
         return (uint(_eidasLevel) >= uint(_level));
     }
 

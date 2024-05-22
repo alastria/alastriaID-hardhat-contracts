@@ -2,56 +2,136 @@
 pragma solidity 0.8.17;
 
 contract AlastriaNameService {
-    struct Record {
-        address owner;
-        address resolver;
-        uint64 ttl;
+
+    struct IdentityEntity {  
+        string name;
+        string cif;
+        string url_logo;
+        string url_createAID;
+        string url_AOA;
+        bool active;
     }
 
-    mapping(bytes32=>Record) records;
+    string public cif = "firstIdentity-cif";
+    string public url_logo = "firstIdentity-url_logo";
+    string public url_createAID = "firstIdentity-url_createAID";
+    string public url_AOA = "firstIdentity-url_AOA";
+    string public name = "firstidentity";
+    
 
-    event NewOwner(bytes32 indexed node, bytes32 indexed label, address owner);
-    event Transfer(bytes32 indexed node, address owner);
-    event NewResolver(bytes32 indexed node, address resolver);
 
-    modifier only_owner(bytes32 node) {
-        if(records[node].owner != msg.sender) revert("Only owner can manage node");
+    mapping(address => IdentityEntity) internal entities;
+    address[] listEntities;
+
+    modifier onlyIdentityEntity(address _identityEntity) {
+        require (entities[_identityEntity].active == true);
         _;
     }
-
-    constructor(address _owner) {
-        records[0].owner = _owner;
+    
+     modifier notIdentityEntity(address _identityEntity) {
+        require (!entities[_identityEntity].active);
+        _;
+    }
+   
+    constructor (address _firstIdentity) public{
+	    _addEntity(_firstIdentity, name, cif, url_logo, url_createAID, url_AOA, true);
+        
     }
 
-    function owner(bytes32 node) public view returns (address) {
-        return records[node].owner;
+    /**
+    * @dev function that allows you to add a entity to the entities mapping
+    * @param _addressEntity the address that identify the entity in the blockchain
+    * @param _name the name of the entity
+    * @param _cif the cif of the entity
+    * @param _url_logo the url that contains the logo of the entity
+    * @param _url_createAID the url that contains the alastria ID of the entity
+    * @param _url_AOA the url that contains the AOA of the entity
+    * @param _active a flag that shows if a entity is active or not
+    */ 
+    function _addEntity(address _addressEntity, string memory _name, string memory _cif, string memory _url_logo, string memory _url_createAID, string memory _url_AOA, bool _active) internal {
+        listEntities.push(_addressEntity);
+        entities[_addressEntity].name = _name;
+        entities[_addressEntity].cif = _cif;
+        entities[_addressEntity].url_logo = _url_logo;
+        entities[_addressEntity].url_createAID = _url_createAID;
+        entities[_addressEntity].url_AOA = _url_AOA;
+        entities[_addressEntity].active = _active;
     }
 
-    function resolver(bytes32 node) public view returns (address) {
-        return records[node].resolver;
+    function addEntity(address _addressEntity, string memory _name, string memory _cif, string memory _url_logo, string memory _url_createAID, string memory _url_AOA) public notIdentityEntity(_addressEntity) onlyIdentityEntity(msg.sender) {
+        _addEntity(_addressEntity, _name, _cif, _url_logo, _url_createAID, _url_AOA, true);
+    }
+    
+    /**
+    * @dev function that allows you to change the name of the entity
+    * @param _addressEntity the address that identify the entity in the blockchain
+    * @param _name the new name of the entity
+    */
+    function setNameEntity(address _addressEntity, string memory _name) public onlyIdentityEntity(_addressEntity) {
+        entities[_addressEntity].name = _name;
+    }
+    
+    /**
+    * @dev function that allows you to change the CIF of the entity
+    * @param _addressEntity the address that identify the entity in the blockchain
+    * @param _cif the new cif of the entity
+    */
+    function setCifEntity(address _addressEntity, string memory _cif) public onlyIdentityEntity(_addressEntity) {
+        entities[_addressEntity].cif = _cif;
+    }
+    
+    /**
+    * @dev function that allows you to change the Url that contains the logo of the entity
+    * @param _addressEntity the address that identify the entity in the blockchain
+    * @param _url_logo the new url that contains the logo of the entity
+    */
+    function setUrlLogo(address _addressEntity, string memory _url_logo) public onlyIdentityEntity(_addressEntity) {
+        entities[_addressEntity].url_logo = _url_logo;
+    }
+    
+    /**
+    * @dev function that allows you to change the Url that contains the Alastria ID of the entity
+    * @param _addressEntity the address that identify the entity in the blockchain
+    * @param _url_createAID the new url that contains the Alastria ID of the entity
+    */
+    function setUrlCreateAID(address _addressEntity, string memory _url_createAID) public onlyIdentityEntity(_addressEntity) {
+        entities[_addressEntity].url_createAID = _url_createAID;
+    }
+    
+    /**
+    * @dev function that allows you to change the Url that contains the AOA of the entity
+    * @param _addressEntity the address that identify the entity in the blockchain
+    * @param _url_AOA the new url that contains the AOA of the entity
+    */
+    function setUrlAOA(address _addressEntity, string memory _url_AOA) public onlyIdentityEntity(_addressEntity) {
+        entities[_addressEntity].url_AOA = _url_AOA;
     }
 
-    function ttl(bytes32 node) public view returns (uint64) {
-        return records[node].ttl;
+    /**
+    * @dev function that returns all the information of a entity
+    * @param _addressEntity the address that identify the entity in the blockchain
+    * @return _name of the entity you pass to the functions as a parameter
+    * @return _cif of the entity you pass to the functions as a parameter
+    * @return _url_logo of the entity you pass to the functions as a parameter
+    * @return _url_createAID of the entity you pass to the functions as a parameter
+    * @return _url_AOA of the entity you pass to the functions as a parameter
+    * @return _active of the entity you pass to the functions as a parameter
+    */
+    function getEntity(address _addressEntity) public view returns(string memory _name, string memory _cif, string memory _url_logo, string memory _url_createAID, string memory _url_AOA, bool _active){
+        _name = entities[_addressEntity].name;
+        _cif = entities[_addressEntity].cif;
+        _url_logo = entities[_addressEntity].url_logo;
+        _url_createAID = entities[_addressEntity].url_createAID;
+        _url_AOA = entities[_addressEntity].url_AOA;
+        _active = entities[_addressEntity].active;
     }
+    
+    /**
+    * @dev function that return the list of entities that are registered in the blockchain
+    * @return array of address of entities
+    */
+    function entitiesList() public view returns(address[] memory){
+        return listEntities;
+    } 
 
-    function setOwner(bytes32 node, address _owner) public only_owner(node) {
-        emit Transfer(node, _owner);
-        records[node].owner = _owner;
-    }
-
-    function setSubnodeOwner(bytes32 node, bytes32 label, address _owner) public only_owner(node) {
-        bytes32 subnode = keccak256(abi.encode(node, label));
-        emit NewOwner(node, label, _owner);
-        records[subnode].owner = _owner;
-    }
-
-    function setResolver(bytes32 node, address _resolver) public only_owner(node) {
-        emit NewResolver(node, _resolver);
-        records[node].resolver = _resolver;
-    }
-
-    function setTTL(bytes32 node, uint64 _ttl) public only_owner(node) {
-        records[node].ttl = _ttl;
-    }
 }
