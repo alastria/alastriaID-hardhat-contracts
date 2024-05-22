@@ -1,5 +1,14 @@
 # Alastria Hardhat Project
 
+## Utilities
+```
+npx hardhat help
+npx hardhat test
+REPORT_GAS=true npx hardhat test
+npx hardhat node
+npx hardhat run scripts/deploy.js
+```
+
 ## **What is does?**
 
 Smart Contracts are the key point to work with the Alastria Identity Ecosystem. Without this part the whole ecosystem will not work, so it is very important to be sure that this repository is installed and the Smart Contracts are deployed properly on the blockchain.
@@ -120,8 +129,8 @@ To install all content from `package.json`, inside the repo, just run ``npm i`` 
 
 In order to run the project in different types of Network, there are some configurations to take into account. There are the following ones:
 
-- **Node in T Network has the following IP address**: **<http://63.33.206.111/rpc>**  
-- **Node in B Network has the following IP address**: **<http://63.33.206.111:8545>**
+- **Node in T Network has the following IP address**: **http://redT-nodeIP**  
+- **Node in B Network has the following IP address**: **http://redB-nodeIP**
 
 Once it is know the previous aspects, in the truffle-config file there are some possibilities to deploy the Smart Contracts which are the next ones:  
 
