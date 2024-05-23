@@ -1,6 +1,6 @@
 {
   "name": "alastriaid-hardhat-contracts",
-  "version": "0.0.1",
+  "version": "2.2.1",
   "description": "Hardhat alastria contracts version",
   "main": "index.js",
   "scripts": {

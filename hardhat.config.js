@@ -10,8 +10,8 @@ const adminKey = keythereum.recover(password, JSON.parse(fs.readFileSync(adminPa
 const firstIdKey = keythereum.recover(password, JSON.parse(fs.readFileSync(firstId, 'utf8'))).toString('hex');
 
 const localNode = "http://127.0.0.1:8545";
-const tNetworkNode = "http://your_node:22000";
-const bNetworkNode = "http://your_node:8545";
+const tNetworkNode = "http://<redT-nodeIP>";
+const bNetworkNode = "http://<redB-nodeIP>";
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
