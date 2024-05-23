@@ -10,8 +10,8 @@ const adminKey = keythereum.recover(password, JSON.parse(fs.readFileSync(adminPa
 const firstIdKey = keythereum.recover(password, JSON.parse(fs.readFileSync(firstId, 'utf8'))).toString('hex');
 
 const localNode = "http://127.0.0.1:8545";
-const tNetworkNode = "http://52.19.141.129:22000";
-const bNetworkNode = "http://52.19.141.129:23000";
+const tNetworkNode = "http://your_node:22000";
+const bNetworkNode = "http://your_node:8545";
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -44,6 +44,8 @@ module.exports = {
   solidity: {
     version: "0.8.17",
     settings: {
+      // alastriaT uses "byzantium"
+      // alastriaB uses "berlin"
       evmVersion: 'berlin',
       optimizer: {
         enabled: true,

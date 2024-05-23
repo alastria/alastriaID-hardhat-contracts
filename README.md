@@ -120,8 +120,8 @@ To install all content from `package.json`, inside the repo, just run ``npm i`` 
 
 In order to run the project in different types of Network, there are some configurations to take into account. There are the following ones:
 
-- **Node in T Network has the following IP address**: **<http://63.33.206.111/rpc>**  
-- **Node in B Network has the following IP address**: **<http://63.33.206.111:8545>**
+- **Node in T Network has the following IP address**: **<http://your_node:23000>**  
+- **Node in B Network has the following IP address**: **<http://your_node:8545>**
 
 Once it is know the previous aspects, in the truffle-config file there are some possibilities to deploy the Smart Contracts which are the next ones:  
 
