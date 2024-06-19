@@ -44,7 +44,7 @@ module.exports = {
   solidity: {
     version: "0.8.17",
     settings: {
-      evmVersion: 'berlin',
+      evmVersion: 'byzantium',
       optimizer: {
         enabled: true,
         runs: 200,
