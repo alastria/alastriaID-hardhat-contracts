@@ -33,16 +33,15 @@ async function saveAddresesInfo(address, contractName, network) {
   console.log(`${contractName} address info saved!`);
 }
 
-async function initialize(credentialRegistry, presentationRegistry, publicKeyRegistry, identityManager) {
+async function initialize(credentialRegistry, presentationRegistry, publicKeyRegistry, identityManager, AlastriaNameService) {
 
   const AlastriaIdentityManager = await hre.ethers.getContractFactory("AlastriaIdentityManager");
   const AlastriaCredentialRegistry = await hre.ethers.getContractFactory("AlastriaCredentialRegistry");
   const AlastriaPresentationRegistry = await hre.ethers.getContractFactory("AlastriaPresentationRegistry");
   const AlastriaPublicKeyRegistry = await hre.ethers.getContractFactory("AlastriaPublicKeyRegistry");
   try {
-    console.log('Problems in red T');
     console.log("INITIALIZING CR")
-    const proxifiedCredentialRegistry = await AlastriaCredentialRegistry.attach(credentialRegistry.address);
+    const proxifiedCredentialRegistry = AlastriaCredentialRegistry.attach(credentialRegistry.address);
     let tx = await proxifiedCredentialRegistry.initialize(
       '0x0000000000000000000000000000000000000001'
     );
@@ -51,7 +50,7 @@ async function initialize(credentialRegistry, presentationRegistry, publicKeyReg
       `Credential registry initilized in ${JSON.stringify(receipt)}`
     );
     console.log("INITIALIZING PR")
-    const proxifiedPresentationRegistry = await AlastriaPresentationRegistry.attach(presentationRegistry.address);
+    const proxifiedPresentationRegistry = AlastriaPresentationRegistry.attach(presentationRegistry.address);
     tx = await proxifiedPresentationRegistry.initialize(
       '0x0000000000000000000000000000000000000001'
     );
@@ -60,7 +59,7 @@ async function initialize(credentialRegistry, presentationRegistry, publicKeyReg
       `Presentation registry initilized in ${JSON.stringify(receipt)}`
     );
     console.log("INITIALIZING PKR")
-    const proxifiedPublicKeyRegistry = await AlastriaPublicKeyRegistry.attach(publicKeyRegistry.address);
+    const proxifiedPublicKeyRegistry = AlastriaPublicKeyRegistry.attach(publicKeyRegistry.address);
     tx = await proxifiedPublicKeyRegistry.initialize(
       '0x0000000000000000000000000000000000000001'
     );
@@ -69,7 +68,7 @@ async function initialize(credentialRegistry, presentationRegistry, publicKeyReg
       `Public key registry initilized in ${JSON.stringify(receipt)}`
     );
     console.log("INITIALIZING IM")
-    const proxifiedIdentityManager = await AlastriaIdentityManager.attach(identityManager.address);
+    const proxifiedIdentityManager = AlastriaIdentityManager.attach(identityManager.address);
     tx = await proxifiedIdentityManager.initialize(
       addresses[config.credential],
       addresses[config.publicKey],
@@ -78,109 +77,109 @@ async function initialize(credentialRegistry, presentationRegistry, publicKeyReg
     );
     receipt = await tx.wait(2)
     console.log(`Identity manager initilized in ${JSON.stringify(receipt)}`);
-    
+
+    console.log('DEPLOYING CONTRACTS: NAME SERVICE');
+    let proxyFirstIdentityWallet = await proxifiedIdentityManager.identityKeys(config.firstIdentityWallet,
+      { from: config.firstIdentityWallet });
+    console.log("Proxy Address First Identity", proxyFirstIdentityWallet);
+    const alastriaNameServicesSC = await AlastriaNameService.deploy(proxyFirstIdentityWallet);
+    await alastriaNameServicesSC.deployed();
+    console.log('nameServiceDeployed deployed: ', alastriaNameServicesSC.address);
+    await saveAddresesInfo(
+      alastriaNameServicesSC.address,
+      config.nameService,
+      network
+    );
+
   } catch (err) {
     console.log('ERROR:', err);
     callback(err, null);
   }
-  
+
   console.log('Contracts initialized');
 };
 
 async function main() {
   console.log('INIT DEPLOY')
-    const admin_keystore = fs.readFileSync(admin_keystore_file);
-    console.log('SETTING UP ACCOUNT ADMIN')
-    const ADMIN_WALLET = await new hre.ethers.Wallet.fromEncryptedJson(admin_keystore, password)
-    const ADMIN_ADDRESS = ADMIN_WALLET.address
-    console.log('GETTING FACTORIES')
-    const Eidas = await hre.ethers.getContractFactory("Eidas");
-    // const AlastriaIdentityServiceProvider = await hre.ethers.getContractFactory("AlastriaIdentityServiceProvider");
-    // const AlastriaIdentityIssuer = await hre.ethers.getContractFactory("AlastriaIdentityIssuer");
-    const Proxy = await hre.ethers.getContractFactory("AdminUpgradeabilityProxy");
-    const AlastriaIdentityManager = await hre.ethers.getContractFactory("AlastriaIdentityManager");
-    const AlastriaCredentialRegistry = await hre.ethers.getContractFactory("AlastriaCredentialRegistry");
-    const AlastriaPresentationRegistry = await hre.ethers.getContractFactory("AlastriaPresentationRegistry");
-    const AlastriaPublicKeyRegistry = await hre.ethers.getContractFactory("AlastriaPublicKeyRegistry");
-    const AlastriaNameService = await hre.ethers.getContractFactory("AlastriaNameService");
-    
-    console.log('DEPLOYING CONTRACTS');
-    const eidas = await Eidas.deploy();
-    await eidas.deployed();
-    console.log('DEPLOYING CONTRACTS: IDENTITY MANAGER');
-    const alastriaIdentityManager = await AlastriaIdentityManager.deploy();
-    await alastriaIdentityManager.deployed();
-    console.log('and proxy')
-    const alastriaIdentityManagerProxy = await Proxy.deploy(alastriaIdentityManager.address, ADMIN_ADDRESS, []);
-    await alastriaIdentityManagerProxy.deployed();
-    console.log('identityManager deployed: ', alastriaIdentityManagerProxy.address);
-    await saveAddresesInfo(
-      alastriaIdentityManagerProxy.address,
-      config.manager,
-      network
-      );
-    console.log('DEPLOYING CONTRACTS: CREDENTIAL REGISTRY');
-    const alastriaCredentialRegistry = await AlastriaCredentialRegistry.deploy();
-    await alastriaCredentialRegistry.deployed();
-    const alastriaCredentialRegistryProxy = await Proxy.deploy(alastriaCredentialRegistry.address, ADMIN_ADDRESS, []);
-    await alastriaCredentialRegistryProxy.deployed();
-    console.log('credentialRegistry deployed: ', alastriaCredentialRegistryProxy.address);
-    await saveAddresesInfo(
-      alastriaCredentialRegistryProxy.address,
-      config.credential,
-      network
-      );
-    console.log('DEPLOYING CONTRACTS: PRESENTATION REGISTRY');
-    const alastriaPresentationRegistry = await AlastriaPresentationRegistry.deploy();
-    await alastriaPresentationRegistry.deployed();
-    const alastriaPresentationRegistryProxy = await Proxy.deploy(alastriaPresentationRegistry.address, ADMIN_ADDRESS, []);
-    await alastriaPresentationRegistryProxy.deployed();
-    console.log('presentationRegistry deployed: ', alastriaPresentationRegistryProxy.address);
-    await saveAddresesInfo(
-      alastriaPresentationRegistryProxy.address,
-      config.presentation,
-      network
-      );
-    console.log('DEPLOYING CONTRACTS: PK REGISTRY');
-    const alastriaPublicKeyRegistry = await AlastriaPublicKeyRegistry.deploy();
-    await alastriaPublicKeyRegistry.deployed();
-    const alastriaPublicKeyRegistryProxy = await Proxy.deploy(alastriaPublicKeyRegistry.address, ADMIN_ADDRESS, []);
-    await alastriaPublicKeyRegistryProxy.deployed();
-    console.log('pkRegistry deployed: ', alastriaPublicKeyRegistryProxy.address);
-    await saveAddresesInfo(
-      alastriaPublicKeyRegistryProxy.address,
-      config.publicKey,
-      network
-      );
+  console.log('Choose the correct EVM: byzantium from redT or berlin from redB');
+  const admin_keystore = fs.readFileSync(admin_keystore_file);
+  console.log('SETTING UP ACCOUNT ADMIN')
+  const ADMIN_WALLET = await new hre.ethers.Wallet.fromEncryptedJson(admin_keystore, password)
+  const ADMIN_ADDRESS = ADMIN_WALLET.address
+  console.log('GETTING FACTORIES')
+  const Eidas = await hre.ethers.getContractFactory("Eidas");
+  // const AlastriaIdentityServiceProvider = await hre.ethers.getContractFactory("AlastriaIdentityServiceProvider");
+  // const AlastriaIdentityIssuer = await hre.ethers.getContractFactory("AlastriaIdentityIssuer");
+  const Proxy = await hre.ethers.getContractFactory("AdminUpgradeabilityProxy");
+  const AlastriaIdentityManager = await hre.ethers.getContractFactory("AlastriaIdentityManager");
+  const AlastriaCredentialRegistry = await hre.ethers.getContractFactory("AlastriaCredentialRegistry");
+  const AlastriaPresentationRegistry = await hre.ethers.getContractFactory("AlastriaPresentationRegistry");
+  const AlastriaPublicKeyRegistry = await hre.ethers.getContractFactory("AlastriaPublicKeyRegistry");
+  const AlastriaNameService = await hre.ethers.getContractFactory("AlastriaNameService");
 
-    console.log('DEPLOYING CONTRACTS: EIDAS');
-    const eidasSC = await Eidas.deploy();
-    await eidasSC.deployed();
-    const eidasProxy = await Proxy.deploy(eidasSC.address, ADMIN_ADDRESS, []);
-    await eidasProxy.deployed();
-    console.log('eidas deployed: ', eidasProxy.address);
-    await saveAddresesInfo(
-      eidasProxy.address,
-      config.eidas,
-      network
-      );
+  console.log('DEPLOYING CONTRACTS');
+  console.log('DEPLOYING CONTRACTS: IDENTITY MANAGER');
+  const alastriaIdentityManager = await AlastriaIdentityManager.deploy();
+  await alastriaIdentityManager.deployed();
+  console.log('and proxy')
+  const alastriaIdentityManagerProxy = await Proxy.deploy(alastriaIdentityManager.address, ADMIN_ADDRESS, []);
+  await alastriaIdentityManagerProxy.deployed();
+  console.log('identityManager deployed: ', alastriaIdentityManagerProxy.address);
+  await saveAddresesInfo(
+    alastriaIdentityManagerProxy.address,
+    config.manager,
+    network
+  );
+  console.log('DEPLOYING CONTRACTS: CREDENTIAL REGISTRY');
+  const alastriaCredentialRegistry = await AlastriaCredentialRegistry.deploy();
+  await alastriaCredentialRegistry.deployed();
+  const alastriaCredentialRegistryProxy = await Proxy.deploy(alastriaCredentialRegistry.address, ADMIN_ADDRESS, []);
+  await alastriaCredentialRegistryProxy.deployed();
+  console.log('credentialRegistry deployed: ', alastriaCredentialRegistryProxy.address);
+  await saveAddresesInfo(
+    alastriaCredentialRegistryProxy.address,
+    config.credential,
+    network
+  );
+  console.log('DEPLOYING CONTRACTS: PRESENTATION REGISTRY');
+  const alastriaPresentationRegistry = await AlastriaPresentationRegistry.deploy();
+  await alastriaPresentationRegistry.deployed();
+  const alastriaPresentationRegistryProxy = await Proxy.deploy(alastriaPresentationRegistry.address, ADMIN_ADDRESS, []);
+  await alastriaPresentationRegistryProxy.deployed();
+  console.log('presentationRegistry deployed: ', alastriaPresentationRegistryProxy.address);
+  await saveAddresesInfo(
+    alastriaPresentationRegistryProxy.address,
+    config.presentation,
+    network
+  );
+  console.log('DEPLOYING CONTRACTS: PK REGISTRY');
+  const alastriaPublicKeyRegistry = await AlastriaPublicKeyRegistry.deploy();
+  await alastriaPublicKeyRegistry.deployed();
+  const alastriaPublicKeyRegistryProxy = await Proxy.deploy(alastriaPublicKeyRegistry.address, ADMIN_ADDRESS, []);
+  await alastriaPublicKeyRegistryProxy.deployed();
+  console.log('pkRegistry deployed: ', alastriaPublicKeyRegistryProxy.address);
+  await saveAddresesInfo(
+    alastriaPublicKeyRegistryProxy.address,
+    config.publicKey,
+    network
+  );
 
-    console.log('DEPLOYING CONTRACTS: NAME SERVICE');
-    const alastriaNameServicesSC = await AlastriaNameService.deploy(ADMIN_ADDRESS);
-    await alastriaNameServicesSC.deployed();
-    const alastriaNameServiceProxy = await Proxy.deploy(alastriaNameServicesSC.address, ADMIN_ADDRESS, []);
-    await alastriaNameServiceProxy.deployed();
-    console.log('nameServiceDeployed deployed: ', alastriaNameServiceProxy.address);
-    await saveAddresesInfo(
-      alastriaNameServiceProxy.address,
-      config.nameService,
-      network
-      );
-      
-    await fs.writeFileSync('./addresses.json', JSON.stringify(addresses));
-    await initialize(alastriaCredentialRegistryProxy, alastriaPresentationRegistryProxy, alastriaPublicKeyRegistryProxy, alastriaIdentityManagerProxy);
-    }
-          
+  console.log('DEPLOYING CONTRACTS: EIDAS');
+  const eidasSC = await Eidas.deploy();
+  await eidasSC.deployed();
+  const eidasProxy = await Proxy.deploy(eidasSC.address, ADMIN_ADDRESS, []);
+  await eidasProxy.deployed();
+  console.log('eidas deployed: ', eidasProxy.address);
+  await saveAddresesInfo(
+    eidasProxy.address,
+    config.eidas,
+    network
+  );
+
+  await initialize(alastriaCredentialRegistryProxy, alastriaPresentationRegistryProxy, alastriaPublicKeyRegistryProxy, alastriaIdentityManagerProxy, AlastriaNameService);
+  fs.writeFileSync('./addresses.json', JSON.stringify(addresses));
+}
+
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.
 main().catch((error) => {

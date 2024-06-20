@@ -46,7 +46,7 @@ module.exports = {
     settings: {
       // alastriaT uses "byzantium"
       // alastriaB uses "berlin"
-      evmVersion: 'berlin',
+      evmVersion: 'byzantium',
       optimizer: {
         enabled: true,
         runs: 200,
