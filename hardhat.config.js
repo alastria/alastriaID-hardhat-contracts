@@ -44,7 +44,9 @@ module.exports = {
   solidity: {
     version: "0.8.17",
     settings: {
-      evmVersion: 'berlin',
+      // alastriaT uses "byzantium"
+      // alastriaB uses "berlin"
+      evmVersion: 'byzantium',
       optimizer: {
         enabled: true,
         runs: 200,
